@@ -1,5 +1,7 @@
 package com.example.demo.dao;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -44,7 +46,7 @@ public class BankAccountDAO {
     public List<BankAccountInfo> listBankAccountInfo() {
     	
     	/**
-    	 * dùng Syntax của JPA giống hệt với cú pháp của Hibernate là HQL
+    	 * dùng Syntax của JPA (JPQL) giống hệt với cú pháp của Hibernate là HQL
     	 * ta chỉ quan tâm tới JPA và syntax của nó mà ko quan tâm tới Hibernate.
     	 * các tên lấy theo JavaClass ko phải theo SQL column name
     	 * 
@@ -59,6 +61,32 @@ public class BankAccountDAO {
         Query query = entityManager.createQuery(sql, BankAccountInfo.class);
         
         return query.getResultList();
+    }
+    
+    public List<BankAccountInfo> listBankAccountInfoByNativeSQL(){
+    	
+    	// dùng Native SQL với JPA
+//    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account");
+    	Query q = entityManager.createNativeQuery("SELECT a.id, a.full_name, a.balance FROM bank_account a");
+    	
+    	//trả về 1 list các ROW, mỗi row là 1 array 
+    	List<Object[]> listObject = q.getResultList();  
+    	
+    	List<BankAccountInfo>  listAccounts = new ArrayList<BankAccountInfo>(); 
+    	
+    	for (Object[] a : listObject) {
+    		
+    		BankAccountInfo account = new BankAccountInfo();
+    		
+    		account.setId(((BigInteger)a[0]).longValue());
+    		account.setFullName((String)a[1]);
+    		account.setBalance((Double)a[2]);
+    		listAccounts.add(account);
+    		
+    	    System.out.println("id: " + a[0] +  ", full_name: " + a[1] + ", balance: "+ a[2]);
+    	}
+    	
+    	return listAccounts;
     }
  
     // MANDATORY: Transaction must be created before.

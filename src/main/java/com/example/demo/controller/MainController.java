@@ -34,7 +34,8 @@ public class MainController {
 		 * Phần code của JDBC nằm ở BankAccountDAO class
 		 */
 		List<BankAccountInfo> list = bankAccountDAO.listBankAccountInfo();
-
+//		List<BankAccountInfo> list = bankAccountDAO.listBankAccountInfoByNativeSQL();
+		
 		model.addAttribute("accountInfos", list); //add Model to View  (MVC model)
 
 		return "accountsPage";  //  resources/templates/accountsPage.html
