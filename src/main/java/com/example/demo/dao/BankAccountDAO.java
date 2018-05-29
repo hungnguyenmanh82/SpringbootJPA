@@ -47,6 +47,9 @@ public class BankAccountDAO {
     	 * dùng Syntax của JPA giống hệt với cú pháp của Hibernate là HQL
     	 * ta chỉ quan tâm tới JPA và syntax của nó mà ko quan tâm tới Hibernate.
     	 * các tên lấy theo JavaClass ko phải theo SQL column name
+    	 * 
+    	 * "Select new "  dùng khi muốn lấy 1 phần của Table và mapping với 1 class tương ứng BankAccountInfo.class
+    	 * "Select new " giống hệt với HQL của Hibernate
     	 */
         String sql = "Select new " + BankAccountInfo.class.getName() //
                 			+ "(e.id,e.fullName,e.balance) " //
@@ -54,6 +57,7 @@ public class BankAccountDAO {
         
         //là của JPA là interface, ko phải là Hibernate
         Query query = entityManager.createQuery(sql, BankAccountInfo.class);
+        
         return query.getResultList();
     }
  
