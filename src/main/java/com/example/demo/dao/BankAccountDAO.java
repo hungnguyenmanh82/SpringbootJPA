@@ -69,6 +69,15 @@ public class BankAccountDAO {
 //    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account");
     	Query q = entityManager.createNativeQuery("SELECT a.id, a.full_name, a.balance FROM bank_account a");
     	
+    	//vd1:
+/*    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > ?");
+    	q.setParameter(1, 1);  // 1 = "?"
+    	*/
+    	
+    	//vd2
+/*    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id");
+    	q.setParameter("id", 1);  // ":id"
+*/    	
     	//trả về 1 list các ROW, mỗi row là 1 array 
     	List<Object[]> listObject = q.getResultList();  
     	
