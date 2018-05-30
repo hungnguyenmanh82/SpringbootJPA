@@ -34,7 +34,6 @@ public class BankAccountDAO {
 	 *  Ta có thể thay Hibernate bằng 1 lib khác để implement JPA.
 	 */
 //	@Autowired
-	@PersistenceContext
 	private EntityManager entityManager;   
 
 
