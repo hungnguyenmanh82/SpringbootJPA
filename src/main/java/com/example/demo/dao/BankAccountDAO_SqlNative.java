@@ -23,7 +23,7 @@ import com.example.demo.model.BankAccountInfo;
  */
 //@Repository là singleton
 @Repository
-public class BankAccountDAO {
+public class BankAccountDAO_SqlNative {
 
 	/**
 	 * dùng Spring IoC để khởi tạo biến này.
@@ -33,39 +33,24 @@ public class BankAccountDAO {
 	 *  Tất cả Annotation và SQL sytax đều tuân thủ theo JPA.
 	 *  Ta có thể thay Hibernate bằng 1 lib khác để implement JPA.
 	 */
-//	@Autowired
-	@PersistenceContext
+	@Autowired
 	private EntityManager entityManager;   
 
 
-	public BankAccountDAO() {
+	public BankAccountDAO_SqlNative() {
 	}
 
-	public BankAccount findById(Long id) { 
-		return this.entityManager.find(BankAccount.class, id);
+	public List<BankAccountInfo> listBankAccountInfoByNativeSQL1(){
+
+		//vd3:
+		Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id", BankAccountInfo.class);
+		q.setParameter("id", 1);  // ":id"
+		List<BankAccountInfo> listAccounts = q.getResultList();  
+
+		return listAccounts;
 	}
-
-	public List<BankAccountInfo> listBankAccountInfo() {
-
-		/**
-		 * dùng Syntax của JPA (JPQL) giống hệt với cú pháp của Hibernate là HQL
-		 * ta chỉ quan tâm tới JPA và syntax của nó mà ko quan tâm tới Hibernate.
-		 * các tên lấy theo JavaClass ko phải theo SQL column name
-		 * 
-		 * "Select new "  dùng khi muốn lấy 1 phần của Table và mapping với 1 class tương ứng BankAccountInfo.class
-		 * "Select new " giống hệt với HQL của Hibernate
-		 */
-		String sql = "Select new " + BankAccountInfo.class.getName() //
-				+ "(e.id,e.fullName,e.balance) " //
-				+ " from " + BankAccount.class.getName() + " e ";
-
-		//là của JPA là interface, ko phải là Hibernate
-		Query query = entityManager.createQuery(sql, BankAccountInfo.class);
-
-		return query.getResultList();
-	}
-
-	public List<BankAccountInfo> listBankAccountInfoByNativeSQL(){
+	
+	public List<BankAccountInfo> listBankAccountInfoByNativeSQL2(){
 
 		// dùng Native SQL với JPA
 		//    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account");
@@ -80,11 +65,6 @@ public class BankAccountDAO {
 		/*    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id");
     	q.setParameter("id", 1);  // ":id"
 		 */    	
-
-		//vd3:
-/*		Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id", BankAccountInfo.class);
-		q.setParameter("id", 1);  // ":id"
-		List<BankAccountInfo> listObject = q.getResultList();  */
 
 		//trả về 1 list các ROW, mỗi row là 1 array 
 		List<Object[]> listObject = q.getResultList();  
@@ -106,28 +86,6 @@ public class BankAccountDAO {
 		return listAccounts;
 	}
 
-	// MANDATORY: Transaction must be created before.
-	@Transactional(propagation = Propagation.MANDATORY )
-	public void addAmount(Long id, double amount) throws BankTransactionException {
-		BankAccount account = this.findById(id);
-		if (account == null) {
-			throw new BankTransactionException("Account not found " + id);
-		}
-		double newBalance = account.getBalance() + amount;
-		if (account.getBalance() + amount < 0) {
-			throw new BankTransactionException(
-					"The money in the account '" + id + "' is not enough (" + account.getBalance() + ")");
-		}
-		account.setBalance(newBalance);
-	}
 
-	// Do not catch BankTransactionException in this method.
-	@Transactional(propagation = Propagation.REQUIRES_NEW, 
-			rollbackFor = BankTransactionException.class)
-	public void sendMoney(Long fromAccountId, Long toAccountId, double amount) throws BankTransactionException {
-
-		addAmount(toAccountId, amount);
-		addAmount(fromAccountId, -amount);
-	}
 
 }
