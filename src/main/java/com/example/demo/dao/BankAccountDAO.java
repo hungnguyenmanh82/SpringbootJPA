@@ -106,7 +106,8 @@ public class BankAccountDAO {
 	}
 
 	// MANDATORY: Transaction must be created before.
-	@Transactional(propagation = Propagation.MANDATORY )
+	// nếu chưa có transaction nào tồn thì throw exception (ko tạo mới transaction nếu ko tồn tại)
+	@Transactional(propagation = Propagation.MANDATORY )  
 	public void addAmount(Long id, double amount) throws BankTransactionException {
 		BankAccount account = this.findById(id);
 		if (account == null) {
@@ -121,7 +122,7 @@ public class BankAccountDAO {
 	}
 
 	// Do not catch BankTransactionException in this method.
-	@Transactional(propagation = Propagation.REQUIRES_NEW, 
+	@Transactional(propagation = Propagation.REQUIRES_NEW,  //tạo mới transaction
 			rollbackFor = BankTransactionException.class)
 	public void sendMoney(Long fromAccountId, Long toAccountId, double amount) throws BankTransactionException {
 
