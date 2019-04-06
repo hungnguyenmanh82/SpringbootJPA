@@ -43,6 +43,7 @@ public class BankAccountDAO_SqlNative {
 	public List<BankAccountInfo> listBankAccountInfoByNativeSQL1(){
 
 		//vd3:
+		// BankAccountInfo.class phải chưa JPA annotation 
 		Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id", BankAccountInfo.class);
 		q.setParameter("id", 1);  // ":id"
 		List<BankAccountInfo> listAccounts = q.getResultList();  
@@ -54,19 +55,20 @@ public class BankAccountDAO_SqlNative {
 
 		// dùng Native SQL với JPA
 		//    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account");
+		// a.id la ten column table ở SQL server (ko phải ở java class)
 		Query q = entityManager.createNativeQuery("SELECT a.id, a.full_name, a.balance FROM bank_account a");
 
-		//vd1:
+		//vd1: cách 1
 		/*    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > ?");
-    	q.setParameter(1, 1);  // 1 = "?"
+    	q.setParameter(1, 333);  // 1 = "?"  ở vị trí số 1
 		 */
 
-		//vd2:
+		//vd2: cách 2
 		/*    	Query q = entityManager.createNativeQuery("SELECT id, full_name, balance FROM bank_account WHERE id > :id");
-    	q.setParameter("id", 1);  // ":id"
+    	q.setParameter("id", 444);  // ":id"
 		 */    	
 
-		//trả về 1 list các ROW, mỗi row là 1 array 
+		//trả về 1 list các ROW, mỗi row là 1 array Object[]
 		List<Object[]> listObject = q.getResultList();  
 
 		List<BankAccountInfo>  listAccounts = new ArrayList<BankAccountInfo>(); 
@@ -75,6 +77,7 @@ public class BankAccountDAO_SqlNative {
 
 			BankAccountInfo account = new BankAccountInfo();
 
+			//phải ép kiểu
 			account.setId(((BigInteger)a[0]).longValue());
 			account.setFullName((String)a[1]);
 			account.setBalance((Double)a[2]);

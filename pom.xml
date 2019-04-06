@@ -50,6 +50,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- SQL connect pool dung nhieu nhat hien nay -->
 		<!-- HikariCP: https://github.com/brettwooldridge/HikariCP -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
